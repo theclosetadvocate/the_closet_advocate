@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Closet Advocate</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cormorant+Garamond:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            color: #E2E8F0;
+        }
+        .hero-section {
+            background-color: #5D101C; /* Deeper Burgundy */
+            background-image: linear-gradient(rgba(93, 16, 28, 0.8), rgba(93, 16, 28, 0.8)), url('https://placehold.co/1920x1080/4B5563/FFFFFF?text=Elegant+Closet');
+            background-size: cover;
+            background-position: center;
+        }
+        .text-gold {
+            color: #FFD700; /* Gold */
+        }
+        .bg-gold {
+            background-color: #FFD700;
+        }
+        .bg-gray-dark {
+            background-color: #1a1a1a;
+        }
+        .hover-gold:hover {
+            background-color: #FFD700;
+            color: #000;
+        }
+        .font-playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        .font-cormorant {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* Chatbot specific styles */
+        #chat-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #FFD700;
+            color: black;
+            border-radius: 9999px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        #chat-button:hover {
+            transform: scale(1.1);
+        }
+        #chat-container {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background-color: #1a1a1a;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s ease-in-out;
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #chat-container.open {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .chat-header {
+            background-color: #5D101C;
+            padding: 1rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+        }
+        #chat-window {
+            flex-grow: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            color: white;
+        }
+        .user-message {
+            background-color: #FFD700;
+            color: black;
+            align-self: flex-end;
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            border-bottom-right-radius: 0;
+            max-width: 80%;
+        }
+        .bot-message {
+            background-color: #333333;
+            color: white;
+            align-self: flex-start;
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            border-bottom-left-radius: 0;
+            max-width: 80%;
+        }
+        #chat-input-form {
+            display: flex;
+            padding: 1rem;
+            border-top: 1px solid #333333;
+            background-color: #1a1a1a;
+        }
+        #chat-input {
+            flex-grow: 1;
+            padding: 0.75rem;
+            border-radius: 9999px;
+            background-color: #2a2a2a;
+            color: white;
+            border: none;
+            outline: none;
+        }
+        #send-button {
+            background-color: #FFD700;
+            color: black;
+            padding: 0.75rem 1rem;
+            border-radius: 9999px;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-dark">
+
+    <!-- Header -->
+    <header class="bg-black bg-opacity-50 text-white fixed top-0 left-0 w-full z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="font-playfair text-2xl font-bold text-gold">The Closet Advocate</a>
+            <div class="hidden md:flex space-x-6">
+                <a href="#services" class="hover:text-gold transition duration-300">Services</a>
+                <a href="#why-us" class="hover:text-gold transition duration-300">Why Us</a>
+                <a href="#contact" class="hover:text-gold transition duration-300">Contact</a>
+            </div>
+            <!-- Mobile Menu Button -->
+            <button id="mobile-menu-button" class="md:hidden">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-black bg-opacity-75">
+            <a href="#services" class="block py-4 px-6 text-center hover:bg-gray-800 transition duration-300">Services</a>
+            <a href="#why-us" class="block py-4 px-6 text-center hover:bg-gray-800 transition duration-300">Why Us</a>
+            <a href="#contact" class="block py-4 px-6 text-center hover:bg-gray-800 transition duration-300">Contact</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-center py-32 md:py-48 px-4">
+        <h1 class="font-playfair text-4xl md:text-6xl font-bold text-white mb-4">Your Wardrobe, Masterfully Designed.</h1>
+        <p class="text-xl md:text-2xl text-gray-200 mb-8 font-cormorant">Experience the ultimate in organization and style, tailored to your life.</p>
+        <a href="#contact" class="bg-gold text-black py-3 px-8 rounded-full font-bold uppercase tracking-wide hover-gold transition-all duration-300 transform hover:scale-105">Book a Consultation</a>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-16 md:py-24 px-4 bg-gray-dark text-white">
+        <div class="container mx-auto text-center">
+            <h2 class="font-playfair text-3xl md:text-4xl font-bold text-gold mb-12">Our Bespoke Services</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Service 1 -->
+                <div class="bg-[#1a1a1a] rounded-2xl p-6 md:p-8 transform transition duration-300 hover:scale-105 border border-gold">
+                    <h3 class="font-playfair text-2xl font-bold mb-4">The Curated Closet</h3>
+                    <p class="text-gray-300">A complete overhaul of your wardrobe, sorting by color, fabric, and style to create a system that works for you.</p>
+                </div>
+                <!-- Service 2 -->
+                <div class="bg-[#1a1a1a] rounded-2xl p-6 md:p-8 transform transition duration-300 hover:scale-105 border border-gold">
+                    <h3 class="font-playfair text-2xl font-bold mb-4">Seasonal Refresh</h3>
+                    <p class="text-gray-300">Prepare your wardrobe for the new season, storing off-season items and organizing the rest for effortless dressing.</p>
+                </div>
+                <!-- Service 3 -->
+                <div class="bg-[#1a1a1a] rounded-2xl p-6 md:p-8 transform transition duration-300 hover:scale-105 border border-gold">
+                    <h3 class="font-playfair text-2xl font-bold mb-4">Move-In Magic</h3>
+                    <p class="text-gray-300">Settle into your new home with a perfectly organized wardrobe from day one, so you can focus on living.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Us Section -->
+    <section id="why-us" class="py-16 md:py-24 px-4 bg-[#5D101C] text-white">
+        <div class="container mx-auto text-center">
+            <h2 class="font-playfair text-3xl md:text-4xl font-bold text-gold mb-12">The Advocate's Difference</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="text-left">
+                    <p class="mb-4 text-lg">At The Closet Advocate, we believe a well-organized closet is a foundation for a well-organized life. Our approach is bespoke, discreet, and dedicated to transforming your space into a sanctuary of style and simplicity.</p>
+                    <p class="mb-4 text-lg">Our experts work with you to understand your lifestyle and aesthetic, creating a system that is both beautiful and functional. We don't just organize; we elevate your entire daily routine.</p>
+                </div>
+                <div class="relative rounded-2xl overflow-hidden shadow-2xl">
+                    <img src="https://placehold.co/800x600/1F2937/FFFFFF?text=Organized+Wardrobe" alt="Organized Wardrobe" class="w-full h-auto rounded-2xl">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section id="contact" class="py-16 md:py-24 px-4 bg-gray-dark text-white">
+        <div class="container mx-auto text-center max-w-lg">
+            <h2 class="font-playfair text-3xl md:text-4xl font-bold text-gold mb-12">Let's Create Your Sanctuary</h2>
+            <p class="mb-6">We are available in Nairobi.</p>
+            <p class="mb-6">For direct inquiries, you can also reach us at: <a href="tel:+254719379425" class="text-gold hover:underline">+254719379425</a></p>
+            <form id="contact-form" class="space-y-6">
+                <input type="text" id="name" name="name" placeholder="Your Name" required class="w-full p-4 rounded-full bg-[#1a1a1a] border border-gray-700 focus:outline-none focus:border-gold">
+                <input type="email" id="email" name="email" placeholder="Your Email" required class="w-full p-4 rounded-full bg-[#1a1a1a] border border-gray-700 focus:outline-none focus:border-gold">
+                <textarea id="message" name="message" placeholder="Tell us about your needs..." rows="4" required class="w-full p-4 rounded-2xl bg-[#1a1a1a] border border-gray-700 focus:outline-none focus:border-gold"></textarea>
+                <button type="submit" class="w-full bg-gold text-black py-4 rounded-full font-bold uppercase tracking-wide hover-gold transition-all duration-300 transform hover:scale-105">Send Inquiry</button>
+            </form>
+            <div id="form-message" class="mt-4 text-center text-green-400 hidden">Thank you! Your inquiry has been sent.</div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-8 px-4 text-center text-gray-400">
+        <p>&copy; 2024 The Closet Advocate. All rights reserved.</p>
+        <p>Available in Nairobi. For inquiries: <a href="tel:+254719379425" class="text-gold hover:underline">+254719379425</a></p>
+    </footer>
+
+    <!-- Chatbot Button -->
+    <div id="chat-button">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H8l-4 4V6c0-1.1.9-2 2-2z"/>
+        </svg>
+    </div>
+
+    <!-- Chatbot Container -->
+    <div id="chat-container">
+        <div class="chat-header">
+            <h3 class="text-xl font-bold">How can I help you?</h3>
+            <button id="close-chat" class="text-white">&times;</button>
+        </div>
+        <div id="chat-window">
+            <div class="bot-message">Welcome! As your dedicated AI stylist, I'm here to help you curate your perfect wardrobe. How may I assist you today?</div>
+        </div>
+        <form id="chat-input-form">
+            <input type="text" id="chat-input" placeholder="Type your message..." />
+            <button type="submit" id="send-button">Send</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+            } else {
+                menu.classList.add('hidden');
+            }
+        });
+
+        const chatButton = document.getElementById('chat-button');
+        const chatContainer = document.getElementById('chat-container');
+        const chatInputForm = document.getElementById('chat-input-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatWindow = document.getElementById('chat-window');
+        const closeChatButton = document.getElementById('close-chat');
+
+        chatButton.addEventListener('click', () => {
+            chatContainer.classList.toggle('open');
+        });
+
+        closeChatButton.addEventListener('click', () => {
+            chatContainer.classList.remove('open');
+        });
+
+        chatInputForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userMessage = chatInput.value.trim();
+            if (userMessage === '') return;
+
+            // Display user message
+            const userMsgDiv = document.createElement('div');
+            userMsgDiv.classList.add('user-message');
+            userMsgDiv.textContent = userMessage;
+            chatWindow.appendChild(userMsgDiv);
+            chatInput.value = '';
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            // Display loading indicator
+            const loadingDiv = document.createElement('div');
+            loadingDiv.classList.add('bot-message');
+            loadingDiv.innerHTML = '<div class="loader"></div>';
+            chatWindow.appendChild(loadingDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            // Define the prompt for the AI
+            const systemPrompt = "You are a professional wardrobe stylist and an AI assistant for a company called 'The Closet Advocate'. Your purpose is to provide helpful, professional, and friendly advice about wardrobe organization, fashion, and the services offered by the company. Maintain a luxurious, elegant, and knowledgeable persona. Do not mention your model name or that you are an AI unless asked directly. Keep responses concise and helpful. The company is located in Nairobi, Kenya. You can be reached at +254719379425.";
+            const userQuery = userMessage;
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
+
+            let response;
+            let retries = 0;
+            const maxRetries = 5;
+            const initialDelay = 1000;
+
+            try {
+                while (retries < maxRetries) {
+                    response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (response.ok) {
+                        break; // Success! Exit the loop.
+                    }
+                    if (response.status === 429) { // Too Many Requests
+                        const delay = initialDelay * Math.pow(2, retries);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        retries++;
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                }
+
+                // Remove loading indicator
+                const loadingDiv = chatWindow.querySelector('.loader').parentNode;
+                if (loadingDiv) {
+                    chatWindow.removeChild(loadingDiv);
+                }
+
+                if (response && response.ok) {
+                    const result = await response.json();
+                    const botMessage = result.candidates?.[0]?.content?.parts?.[0]?.text || 'I am sorry, I am unable to respond at this moment.';
+                    const botMsgDiv = document.createElement('div');
+                    botMsgDiv.classList.add('bot-message');
+                    botMsgDiv.textContent = botMessage;
+                    chatWindow.appendChild(botMsgDiv);
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                } else {
+                    const errorMsgDiv = document.createElement('div');
+                    errorMsgDiv.classList.add('bot-message');
+                    errorMsgDiv.textContent = 'I am sorry, there was an error. Please try again later.';
+                    chatWindow.appendChild(errorMsgDiv);
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                const errorMsgDiv = document.createElement('div');
+                errorMsgDiv.classList.add('bot-message');
+                errorMsgDiv.textContent = 'I am sorry, there was an unexpected error. Please check your internet connection and try again.';
+                chatWindow.appendChild(errorMsgDiv);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+        });
+
+        // Handle contact form submission
+        document.getElementById('contact-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                message: formData.get('message')
+            };
+
+            // This is a client-side placeholder. To send an email, you will need a server-side solution.
+            // Example using a free service like Formspree:
+            // const formspreeUrl = "https://formspree.io/f/your-form-id";
+            // await fetch(formspreeUrl, {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify(data)
+            // });
+
+            // Display a success message
+            document.getElementById('form-message').classList.remove('hidden');
+            form.reset();
+        });
+    </script>
+</body>
+</html>
+
