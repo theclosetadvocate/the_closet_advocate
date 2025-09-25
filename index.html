@@ -15,7 +15,7 @@
         }
         .hero-section {
             background-color: #5D101C; /* Deeper Burgundy */
-            background-image: linear-gradient(rgba(93, 16, 28, 0.8), rgba(93, 16, 28, 0.8)), url('https://placehold.co/1920x1080/4B5563/FFFFFF?text=Elegant+Closet');
+            background-image: linear-gradient(rgba(93, 16, 28, 0.8), rgba(93, 16, 28, 0.8));
             background-size: cover;
             background-position: center;
         }
@@ -37,6 +37,65 @@
         }
         .font-cormorant {
             font-family: 'Cormorant Garamond', serif;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .service-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+        .image-container {
+            position: relative;
+            width: 100%;
+            padding-top: 66.66%; /* 3:2 Aspect Ratio */
+            overflow: hidden;
+        }
+        .image-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 1rem;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .image-container img.loaded {
+            opacity: 1;
+        }
+        .loader-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 1rem;
+        }
+        .image-container.loaded .loader-container {
+            display: none;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         /* Chatbot specific styles */
@@ -144,18 +203,6 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 2s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body class="bg-gray-dark">
@@ -163,11 +210,12 @@
     <!-- Header -->
     <header class="bg-black bg-opacity-50 text-white fixed top-0 left-0 w-full z-50">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="font-playfair text-2xl font-bold text-gold">The Closet Advocate</a>
+            <a href="#home-page" class="font-playfair text-2xl font-bold text-gold nav-link">The Closet Advocate</a>
             <div class="hidden md:flex space-x-6">
-                <a href="#services" class="hover:text-gold transition duration-300">Services</a>
-                <a href="#why-us" class="hover:text-gold transition duration-300">Why Us</a>
-                <a href="#contact" class="hover:text-gold transition duration-300">Contact</a>
+                <a href="#services-page" class="hover:text-gold transition duration-300 nav-link">Services</a>
+                <a href="#gallery-page" class="hover:text-gold transition duration-300 nav-link">Gallery</a>
+                <a href="#why-us-page" class="hover:text-gold transition duration-300 nav-link">Why Us</a>
+                <a href="#contact-page" class="hover:text-gold transition duration-300 nav-link">Contact</a>
             </div>
             <!-- Mobile Menu Button -->
             <button id="mobile-menu-button" class="md:hidden">
@@ -176,74 +224,177 @@
         </nav>
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-black bg-opacity-75">
-            <a href="#services" class="block py-4 px-6 text-center hover:bg-gray-800 transition duration-300">Services</a>
-            <a href="#why-us" class="block py-4 px-6 text-center hover:bg-gray-800 transition duration-300">Why Us</a>
-            <a href="#contact" class="block py-4 px-6 text-center hover:bg-gray-800 transition duration-300">Contact</a>
+            <a href="#services-page" class="block py-4 px-6 text-center hover:bg-gray-800 transition duration-300 nav-link">Services</a>
+            <a href="#gallery-page" class="block py-4 px-6 text-center hover:bg-gray-800 transition duration-300 nav-link">Gallery</a>
+            <a href="#why-us-page" class="block py-4 px-6 text-center hover:bg-gray-800 transition duration-300 nav-link">Why Us</a>
+            <a href="#contact-page" class="block py-4 px-6 text-center hover:bg-gray-800 transition duration-300 nav-link">Contact</a>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero-section text-center py-32 md:py-48 px-4">
-        <h1 class="font-playfair text-4xl md:text-6xl font-bold text-white mb-4">Your Wardrobe, Masterfully Designed.</h1>
-        <p class="text-xl md:text-2xl text-gray-200 mb-8 font-cormorant">Experience the ultimate in organization and style, tailored to your life.</p>
-        <a href="#contact" class="bg-gold text-black py-3 px-8 rounded-full font-bold uppercase tracking-wide hover-gold transition-all duration-300 transform hover:scale-105">Book a Consultation</a>
-    </section>
+    <!-- Content Sections -->
+    <div id="content-pages">
 
-    <!-- Services Section -->
-    <section id="services" class="py-16 md:py-24 px-4 bg-gray-dark text-white">
-        <div class="container mx-auto text-center">
-            <h2 class="font-playfair text-3xl md:text-4xl font-bold text-gold mb-12">Our Bespoke Services</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Service 1 -->
-                <div class="bg-[#1a1a1a] rounded-2xl p-6 md:p-8 transform transition duration-300 hover:scale-105 border border-gold">
-                    <h3 class="font-playfair text-2xl font-bold mb-4">The Curated Closet</h3>
-                    <p class="text-gray-300">A complete overhaul of your wardrobe, sorting by color, fabric, and style to create a system that works for you.</p>
+        <!-- Home Page Section -->
+        <section id="home-page" class="content-section active">
+            <div id="hero-bg" class="hero-section text-center py-32 md:py-48 px-4">
+                 <div class="loader-container"><div class="loader"></div></div>
+                <h1 class="font-playfair text-4xl md:text-6xl font-bold text-white mb-4">Your Wardrobe, Masterfully Designed.</h1>
+                <p class="text-xl md:text-2xl text-gray-200 mb-8 font-cormorant">Experience the ultimate in organization and style, tailored to your life.</p>
+                <a href="#contact-page" class="bg-gold text-black py-3 px-8 rounded-full font-bold uppercase tracking-wide hover-gold transition-all duration-300 transform hover:scale-105 nav-link">Book a Consultation</a>
+            </div>
+            <section class="py-16 md:py-24 px-4 bg-gray-dark text-white">
+                <div class="container mx-auto text-center">
+                    <h2 class="font-playfair text-3xl md:text-4xl font-bold text-gold mb-12">Our Bespoke Services</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <!-- Link to a specific section on the services page -->
+                        <a href="#curated-closet-section" class="service-link bg-[#1a1a1a] rounded-2xl p-6 md:p-8 transform transition duration-300 hover:scale-105 border border-gold">
+                            <h3 class="font-playfair text-2xl font-bold mb-4">The Curated Closet</h3>
+                            <p class="text-gray-300">A complete overhaul of your wardrobe, sorting by color, fabric, and style to create a system that works for you.</p>
+                        </a>
+                        <!-- Link to a specific section on the services page -->
+                        <a href="#seasonal-refresh-section" class="service-link bg-[#1a1a1a] rounded-2xl p-6 md:p-8 transform transition duration-300 hover:scale-105 border border-gold">
+                            <h3 class="font-playfair text-2xl font-bold mb-4">Seasonal Refresh</h3>
+                            <p class="text-gray-300">Prepare your wardrobe for the new season, storing off-season items and organizing the rest for effortless dressing.</p>
+                        </a>
+                        <!-- Link to a specific section on the services page -->
+                        <a href="#move-in-magic-section" class="service-link bg-[#1a1a1a] rounded-2xl p-6 md:p-8 transform transition duration-300 hover:scale-105 border border-gold">
+                            <h3 class="font-playfair text-2xl font-bold mb-4">Move-In Magic</h3>
+                            <p class="text-gray-300">Settle into your new home with a perfectly organized wardrobe from day one, so you can focus on living.</p>
+                        </a>
+                    </div>
                 </div>
-                <!-- Service 2 -->
-                <div class="bg-[#1a1a1a] rounded-2xl p-6 md:p-8 transform transition duration-300 hover:scale-105 border border-gold">
-                    <h3 class="font-playfair text-2xl font-bold mb-4">Seasonal Refresh</h3>
-                    <p class="text-gray-300">Prepare your wardrobe for the new season, storing off-season items and organizing the rest for effortless dressing.</p>
+            </section>
+        </section>
+
+        <!-- Services Page Section -->
+        <section id="services-page" class="content-section py-16 md:py-24 px-4 bg-gray-dark text-white">
+            <div class="container mx-auto">
+                <h2 class="font-playfair text-4xl font-bold text-gold text-center mb-12">Our Bespoke Services</h2>
+                <p class="text-center text-lg mb-12 max-w-2xl mx-auto">At The Closet Advocate, we transform cluttered spaces into elegant, functional sanctuaries. Our services are designed to meet your unique needs, bringing order, style, and peace to your life.</p>
+                
+                <!-- Service Section: The Curated Closet -->
+                <div id="curated-closet-section" class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
+                    <div>
+                        <h3 class="font-playfair text-3xl font-bold text-gold mb-4">The Curated Closet (Declutter & Curate)</h3>
+                        <p class="text-lg mb-4">The first step to a perfect wardrobe is to let go of what no longer serves you. We work with you to meticulously declutter your closet, helping you identify what to keep, donate, and discard. This process frees up space and creates a foundation for a wardrobe you truly love.</p>
+                    </div>
+                    <div class="image-container shadow-lg">
+                        <div class="loader-container"><div class="loader"></div></div>
+                        <img data-image-prompt="A person's hands meticulously folding a pile of clothes, modern and clean style." alt="Decluttering a wardrobe" class="rounded-2xl" />
+                    </div>
                 </div>
-                <!-- Service 3 -->
-                <div class="bg-[#1a1a1a] rounded-2xl p-6 md:p-8 transform transition duration-300 hover:scale-105 border border-gold">
-                    <h3 class="font-playfair text-2xl font-bold mb-4">Move-In Magic</h3>
-                    <p class="text-gray-300">Settle into your new home with a perfectly organized wardrobe from day one, so you can focus on living.</p>
+
+                <!-- Service Section: Seasonal Refresh -->
+                <div id="seasonal-refresh-section" class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
+                    <div class="image-container shadow-lg order-2 md:order-1">
+                        <div class="loader-container"><div class="loader"></div></div>
+                        <img data-image-prompt="Neatly stacked and labeled storage boxes for clothes, with seasonal items visible." alt="Organizing a closet with boxes and hangers" class="rounded-2xl" />
+                    </div>
+                    <div class="order-1 md:order-2">
+                        <h3 class="font-playfair text-3xl font-bold text-gold mb-4">Seasonal Refresh (Organize & Systemize)</h3>
+                        <p class="text-lg mb-4">Once your closet is decluttered, we bring in our expertise in organization. We create a system that is intuitive and easy to maintain, using tailored solutions like color-coding, folding techniques, and space-saving hangers. The goal is an effortless morning routine.</p>
+                    </div>
+                </div>
+
+                <!-- Service Section: Move-In Magic -->
+                <div id="move-in-magic-section" class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="font-playfair text-3xl font-bold text-gold mb-4">Move-In Magic (Elevate & Style)</h3>
+                        <p class="text-lg mb-4">Beyond just organizing, we help you discover the full potential of your wardrobe. We provide styling tips and outfit ideas based on your existing pieces, ensuring every item is a perfect fit for your personal aesthetic and lifestyle.</p>
+                    </div>
+                    <div class="image-container shadow-lg">
+                        <div class="loader-container"><div class="loader"></div></div>
+                        <img data-image-prompt="A professional stylist in a clean, stylish room, helping a person try on a blazer." alt="Stylist helping a client choose an outfit" class="rounded-2xl" />
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- Why Us Section -->
-    <section id="why-us" class="py-16 md:py-24 px-4 bg-[#5D101C] text-white">
-        <div class="container mx-auto text-center">
-            <h2 class="font-playfair text-3xl md:text-4xl font-bold text-gold mb-12">The Advocate's Difference</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                <div class="text-left">
-                    <p class="mb-4 text-lg">At The Closet Advocate, we believe a well-organized closet is a foundation for a well-organized life. Our approach is bespoke, discreet, and dedicated to transforming your space into a sanctuary of style and simplicity.</p>
-                    <p class="mb-4 text-lg">Our experts work with you to understand your lifestyle and aesthetic, creating a system that is both beautiful and functional. We don't just organize; we elevate your entire daily routine.</p>
-                </div>
-                <div class="relative rounded-2xl overflow-hidden shadow-2xl">
-                    <img src="https://placehold.co/800x600/1F2937/FFFFFF?text=Organized+Wardrobe" alt="Organized Wardrobe" class="w-full h-auto rounded-2xl">
+        </section>
+        
+        <!-- Gallery Page Section -->
+        <section id="gallery-page" class="content-section py-16 md:py-24 px-4 bg-gray-dark text-white">
+            <div class="container mx-auto text-center">
+                <h2 class="font-playfair text-4xl font-bold text-gold mb-6">Our Work in Pictures</h2>
+                <p class="text-lg max-w-2xl mx-auto mb-12">Take a look at some of the spaces we have transformed. A picture is worth a thousand words when it comes to a perfectly organized closet.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Gallery Item 1 -->
+                    <div class="image-container shadow-lg">
+                        <img src="1000296440.jpg" alt="A clean, organized walk-in closet with hanging clothes and shoes neatly arranged." class="rounded-2xl loaded" />
+                    </div>
+                    <!-- Gallery Item 2 -->
+                    <div class="image-container shadow-lg">
+                        <img src="1000296439.jpg" alt="A well-lit, minimalist closet with elegant shelving and a mix of hanging and folded clothes." class="rounded-2xl loaded" />
+                    </div>
+                    <!-- Gallery Item 3 -->
+                    <div class="image-container shadow-lg">
+                        <img src="1000296443.jpg" alt="A close-up of a neatly folded stack of shirts with an elegant label." class="rounded-2xl loaded" />
+                    </div>
+                    <!-- Gallery Item 4 -->
+                    <div class="image-container shadow-lg">
+                        <img src="1000296441.jpg" alt="A view of a modern closet with both hanging clothes and stylish shelving for accessories." class="rounded-2xl loaded" />
+                    </div>
+                    <!-- Gallery Item 5 -->
+                    <div class="image-container shadow-lg">
+                        <img src="1000296438.jpg" alt="A sophisticated and luxurious walk-in closet with designer bags on display." class="rounded-2xl loaded" />
+                    </div>
+                    <!-- Gallery Item 6 -->
+                    <div class="image-container shadow-lg">
+                        <img src="1000296442.jpg" alt="A close-up of a perfectly arranged set of clothes on a clothes rack with a stylish handbag." class="rounded-2xl loaded" />
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Contact Form Section -->
-    <section id="contact" class="py-16 md:py-24 px-4 bg-gray-dark text-white">
-        <div class="container mx-auto text-center max-w-lg">
-            <h2 class="font-playfair text-3xl md:text-4xl font-bold text-gold mb-12">Let's Create Your Sanctuary</h2>
-            <p class="mb-6">We are available in Nairobi.</p>
-            <p class="mb-6">For direct inquiries, you can also reach us at: <a href="tel:+254719379425" class="text-gold hover:underline">+254719379425</a></p>
-            <form id="contact-form" class="space-y-6">
-                <input type="text" id="name" name="name" placeholder="Your Name" required class="w-full p-4 rounded-full bg-[#1a1a1a] border border-gray-700 focus:outline-none focus:border-gold">
-                <input type="email" id="email" name="email" placeholder="Your Email" required class="w-full p-4 rounded-full bg-[#1a1a1a] border border-gray-700 focus:outline-none focus:border-gold">
-                <textarea id="message" name="message" placeholder="Tell us about your needs..." rows="4" required class="w-full p-4 rounded-2xl bg-[#1a1a1a] border border-gray-700 focus:outline-none focus:border-gold"></textarea>
-                <button type="submit" class="w-full bg-gold text-black py-4 rounded-full font-bold uppercase tracking-wide hover-gold transition-all duration-300 transform hover:scale-105">Send Inquiry</button>
-            </form>
-            <div id="form-message" class="mt-4 text-center text-green-400 hidden">Thank you! Your inquiry has been sent.</div>
-        </div>
-    </section>
+        <!-- Why Us Page Section -->
+        <section id="why-us-page" class="content-section py-16 md:py-24 px-4 bg-[#5D101C] text-white">
+            <div class="container mx-auto text-center max-w-3xl">
+                <h2 class="font-playfair text-4xl font-bold text-gold mb-4">The Advocate's Difference</h2>
+                <p class="text-2xl font-playfair font-bold text-white mb-8">From chaos to couture, we craft your calm.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                    <div class="image-container shadow-lg">
+                         <div class="loader-container"><div class="loader"></div></div>
+                        <img data-image-prompt="A professional wardrobe consultant and a client collaborating on closet organization, with a friendly, natural feel." alt="A consultant and client working together on a closet" class="rounded-2xl" />
+                    </div>
+                    <div class="p-6 rounded-2xl border border-gold backdrop-blur-md bg-white bg-opacity-10">
+                        <h3 class="font-playfair text-2xl font-bold text-gold mb-2">Our Philosophy</h3>
+                        <p class="text-gray-300">We work with you, not just for you. Your vision and comfort are at the heart of our process. We ensure every decision is collaborative and every result is an authentic reflection of your style.</p>
+                    </div>
+
+                    <div class="p-6 rounded-2xl border border-gold backdrop-blur-md bg-white bg-opacity-10 md:order-2">
+                        <h3 class="font-playfair text-2xl font-bold text-gold mb-2">Our Expertise</h3>
+                        <p class="text-gray-300">With a keen eye for detail and years of experience, we masterfully handle everything from seasonal refreshes to full-scale home moves. Our solutions are elegant, efficient, and built to last.</p>
+                    </div>
+                    <div class="image-container shadow-lg md:order-1">
+                        <div class="loader-container"><div class="loader"></div></div>
+                        <img data-image-prompt="A close-up shot of perfectly organized clothes, with a focus on elegant details like color-coding and high-quality hangers." alt="A close-up of a perfectly organized closet" class="rounded-2xl" />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Page Section -->
+        <section id="contact-page" class="content-section py-16 md:py-24 px-4 bg-gray-dark text-white">
+            <div class="container mx-auto text-center max-w-lg">
+                <h2 class="font-playfair text-4xl font-bold text-gold mb-12">Connect With Us</h2>
+                <p class="mb-6 text-lg">We are available for consultations in Nairobi, Kenya. We would be delighted to hear from you and begin your wardrobe transformation journey.</p>
+                <div class="space-y-4 mb-8">
+                    <p class="text-2xl font-bold">Phone:</p>
+                    <a href="tel:+254719379425" class="text-gold hover:underline text-lg">+254719379425</a>
+                    <p class="text-2xl font-bold mt-4">Email:</p>
+                    <a href="mailto:contact@theclosetadvocate.com" class="text-gold hover:underline text-lg">contact@theclosetadvocate.com</a>
+                </div>
+                <p class="mb-6 text-lg">Or, simply send us a message below.</p>
+                <form id="contact-form" class="space-y-6">
+                    <input type="text" id="name" name="name" placeholder="Your Name" required class="w-full p-4 rounded-full bg-[#1a1a1a] border border-gray-700 focus:outline-none focus:border-gold">
+                    <input type="email" id="email" name="email" placeholder="Your Email" required class="w-full p-4 rounded-full bg-[#1a1a1a] border border-gray-700 focus:outline-none focus:border-gold">
+                    <textarea id="message" name="message" placeholder="Tell us about your needs..." rows="4" required class="w-full p-4 rounded-2xl bg-[#1a1a1a] border border-gray-700 focus:outline-none focus:border-gold"></textarea>
+                    <button type="submit" class="w-full bg-gold text-black py-4 rounded-full font-bold uppercase tracking-wide hover-gold transition-all duration-300 transform hover:scale-105">Send Inquiry</button>
+                </form>
+                <div id="form-message" class="mt-4 text-center text-green-400 hidden">Thank you! Your inquiry has been sent.</div>
+            </div>
+        </section>
+
+    </div> <!-- End of content-pages container -->
+
 
     <!-- Footer -->
     <footer class="bg-black py-8 px-4 text-center text-gray-400">
@@ -261,11 +412,11 @@
     <!-- Chatbot Container -->
     <div id="chat-container">
         <div class="chat-header">
-            <h3 class="text-xl font-bold">How can I help you?</h3>
+            <h3 class="text-xl font-bold">Chat with Aura</h3>
             <button id="close-chat" class="text-white">&times;</button>
         </div>
         <div id="chat-window">
-            <div class="bot-message">Welcome! As your dedicated AI stylist, I'm here to help you curate your perfect wardrobe. How may I assist you today?</div>
+            <div class="bot-message">Hello there! My name is Aura, and I am delighted to serve as your dedicated AI stylist. How may I assist you in curating your ideal wardrobe today?</div>
         </div>
         <form id="chat-input-form">
             <input type="text" id="chat-input" placeholder="Type your message..." />
@@ -281,6 +432,52 @@
             } else {
                 menu.classList.add('hidden');
             }
+        });
+
+        // Function to show the correct page and scroll to section if needed
+        function showPage(pageId) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            let pageToShow = pageId;
+            let sectionToScrollTo = null;
+
+            // Check if the link is one of the service links on the homepage
+            if (pageId === 'curated-closet-section' || pageId === 'seasonal-refresh-section' || pageId === 'move-in-magic-section') {
+                pageToShow = 'services-page';
+                sectionToScrollTo = pageId;
+            }
+
+            const activePage = document.getElementById(pageToShow);
+            if (activePage) {
+                activePage.classList.add('active');
+                if (sectionToScrollTo) {
+                    // Give the page time to become visible before scrolling
+                    setTimeout(() => {
+                        const sectionElement = document.getElementById(sectionToScrollTo);
+                        if (sectionElement) {
+                            sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }, 100);
+                }
+            }
+        }
+
+        // Handle navigation clicks
+        document.querySelectorAll('.nav-link, .service-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = e.target.closest('a').getAttribute('href').substring(1);
+                showPage(targetId);
+                // Hide mobile menu after clicking a link
+                document.getElementById('mobile-menu').classList.add('hidden');
+            });
+        });
+
+        // Show the home page on initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            showPage('home-page');
         });
 
         const chatButton = document.getElementById('chat-button');
@@ -313,13 +510,13 @@
 
             // Display loading indicator
             const loadingDiv = document.createElement('div');
-            loadingDiv.classList.add('bot-message');
-            loadingDiv.innerHTML = '<div class="loader"></div>';
-            chatWindow.appendChild(loadingDiv);
+                loadingDiv.classList.add('bot-message');
+                loadingDiv.innerHTML = '<div class="loader"></div>';
+                chatWindow.appendChild(loadingDiv);
             chatWindow.scrollTop = chatWindow.scrollHeight;
 
             // Define the prompt for the AI
-            const systemPrompt = "You are a professional wardrobe stylist and an AI assistant for a company called 'The Closet Advocate'. Your purpose is to provide helpful, professional, and friendly advice about wardrobe organization, fashion, and the services offered by the company. Maintain a luxurious, elegant, and knowledgeable persona. Do not mention your model name or that you are an AI unless asked directly. Keep responses concise and helpful. The company is located in Nairobi, Kenya. You can be reached at +254719379425.";
+            const systemPrompt = "You are a professional wardrobe stylist named Aura and an eloquent, friendly AI assistant for a company called 'The Closet Advocate'. Your purpose is to provide helpful, professional, and friendly advice about wardrobe organization, fashion, and the services offered by the company. Maintain a luxurious, elegant, and knowledgeable persona. Use a conversational, encouraging, and welcoming tone. Do not mention your model name or that you are an AI unless asked directly. Keep responses concise and helpful. The company is located in Nairobi, Kenya. You can be reached at +254719379425.";
             const userQuery = userMessage;
             const apiKey = "";
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
@@ -356,9 +553,9 @@
                 }
 
                 // Remove loading indicator
-                const loadingDiv = chatWindow.querySelector('.loader').parentNode;
-                if (loadingDiv) {
-                    chatWindow.removeChild(loadingDiv);
+                const existingLoader = chatWindow.querySelector('.loader');
+                if (existingLoader) {
+                    existingLoader.parentNode.remove();
                 }
 
                 if (response && response.ok) {
@@ -410,7 +607,127 @@
             document.getElementById('form-message').classList.remove('hidden');
             form.reset();
         });
+
+        // Function to generate and set an image from a prompt
+        async function generateAndSetImage(imgElement) {
+            const prompt = imgElement.dataset.image-prompt;
+            const loadingContainer = imgElement.previousElementSibling;
+            
+            const payload = {
+                instances: [{ prompt: prompt }],
+                parameters: { "sampleCount": 1 }
+            };
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+
+            let response;
+            let retries = 0;
+            const maxRetries = 5;
+            const initialDelay = 1000;
+
+            try {
+                while (retries < maxRetries) {
+                    response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (response.ok) {
+                        break;
+                    }
+                    if (response.status === 429) {
+                        const delay = initialDelay * Math.pow(2, retries);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        retries++;
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                }
+
+                if (response && response.ok) {
+                    const result = await response.json();
+                    const base64Data = result?.predictions?.[0]?.bytesBase64Encoded;
+                    if (base64Data) {
+                        const imageUrl = `data:image/png;base64,${base64Data}`;
+                        imgElement.src = imageUrl;
+                        imgElement.onload = () => {
+                            loadingContainer.style.display = 'none';
+                            imgElement.classList.add('loaded');
+                        };
+                    }
+                } else {
+                    console.error("Failed to generate image after retries.");
+                    loadingContainer.innerHTML = '<span class="text-red-400">Failed to load image.</span>';
+                }
+            } catch (error) {
+                console.error("Error generating image:", error);
+                loadingContainer.innerHTML = '<span class="text-red-400">Error.</span>';
+            }
+        }
+        
+        // Use IntersectionObserver to lazy load images with data-image-prompt attribute
+        document.addEventListener('DOMContentLoaded', () => {
+            const imageContainers = document.querySelectorAll('.image-container img[data-image-prompt]');
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const imgElement = entry.target;
+                        if (!imgElement.src) { // Check if image hasn't been loaded yet
+                            generateAndSetImage(imgElement);
+                        }
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                rootMargin: '100px',
+                threshold: 0.1
+            });
+
+            imageContainers.forEach(imgElement => {
+                observer.observe(imgElement.parentNode);
+            });
+
+            // Handle the hero section background separately to load immediately
+            const heroBg = document.getElementById('hero-bg');
+            const heroPrompt = "Elegant, luxurious walk-in closet with clothes neatly organized on hangers, warm, sophisticated lighting.";
+            const heroPayload = {
+                instances: [{ prompt: heroPrompt }],
+                parameters: { "sampleCount": 1 }
+            };
+            const heroApiKey = "";
+            const heroApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${heroApiKey}`;
+
+            fetch(heroApiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(heroPayload)
+            })
+            .then(res => res.json())
+            .then(result => {
+                const base64Data = result?.predictions?.[0]?.bytesBase64Encoded;
+                if (base64Data) {
+                    const imageUrl = `data:image/png;base64,${base64Data}`;
+                    heroBg.style.backgroundImage = `linear-gradient(rgba(93, 16, 28, 0.8), rgba(93, 16, 28, 0.8)), url('${imageUrl}')`;
+                }
+                const heroLoader = heroBg.querySelector('.loader-container');
+                if (heroLoader) heroLoader.style.display = 'none';
+            })
+            .catch(error => {
+                console.error("Error generating hero background image:", error);
+                const heroLoader = heroBg.querySelector('.loader-container');
+                if (heroLoader) heroLoader.style.display = 'none';
+            });
+        });
+
+        // Set the gallery images to loaded state since they are static
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('#gallery-page .image-container img').forEach(img => {
+                img.classList.add('loaded');
+            });
+        });
     </script>
 </body>
 </html>
 
+                                    
